@@ -10,7 +10,7 @@ namespace E_CommerceSystem_API.Models
     public class Product
     {
         [key]
-        
+
         public int ProductId { get; set; }
 
         [Required]
@@ -26,8 +26,9 @@ namespace E_CommerceSystem_API.Models
         [Range(0, int.MaxValue, ErrorMessage = "Stock cannot be negative")]
         public int Stock { get; set; }
 
-      
+
         public List<Review> Reviews { get; set; } = new List<Review>();
+
         public decimal OverallRating
         {
             get
@@ -38,15 +39,8 @@ namespace E_CommerceSystem_API.Models
                 return (decimal)Reviews.Average(r => r.Rating);
             }
 
-
         }
 
-
-   
-
-
-
     }
-
 }
 

@@ -1,8 +1,14 @@
 ﻿using E_CommerceSystem_API.DTOs;
 using E_CommerceSystem_API.Models;
+using E_CommerceSystem_API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics.Metrics;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace E_CommerceSystem_API.Controllers
 {
@@ -12,52 +18,29 @@ namespace E_CommerceSystem_API.Controllers
     [Route("api/User")]
     public class UserController: ControllerBase
     {
-        ApplicationDbContext context= new ApplicationDbContext();
+        public ApplicationDbContext _context;
+        public LoggingService _log;
+        public UserController(ApplicationDbContext context, LoggingService log)
 
-        [HttpPost("RegisterUser")]
-        public IActionResult RegisterUser(UserRegisterDTO userDto)
         {
-            User u = new User();
-            u.Name = userDto.Name;
-            u.Email = userDto.Email;
-            u.Phone = userDto.Phone;
-            u.Password = userDto.Password;
-            u.Role = "User";
-            u.CreatedAt = DateTime.Now;
-
-            context.Users.Add(u);
-            context.SaveChanges();
-
-            return Ok("User registered succefully with ID = " + u.UserId);
+            _context = context;
+            _log = log;
 
         }
-
-
-
-
-        [HttpPost("Login")]
-        public IActionResult Login(string Email, string Password)
-        {
-            var user = context.Users.FirstOrDefault(u =>u.Email == Email&& u.Password == Password);
-
-            if (user == null)
-            {
-                return BadRequest("Invalid email or password");
-            }
-
-            return Ok(user);
-        }
-
 
 
 
         [HttpGet("GetUserById")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetUserById(int id)
         {
-            var user = context.Users.FirstOrDefault(u => u.UserId == id);
+            _log.Log($"GetUserById called. UserId={id}");
+
+            var user = _context.Users.FirstOrDefault(u => u.UserId == id);
 
             if (user == null)
             {
+                _log.Log($"User not found. UserId={id}");
                 return NotFound("User not found");
             }
 
@@ -70,11 +53,14 @@ namespace E_CommerceSystem_API.Controllers
                 Phone = user.Phone
             });
 
+            _log.Log($"User returned successfully. UserId={id}");
+
             return Ok(OutPutUsers);
         }
 
 
 
+        
 
 
     }

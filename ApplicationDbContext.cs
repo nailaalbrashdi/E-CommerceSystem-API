@@ -1,4 +1,5 @@
-﻿using E_CommerceSystem_API.Models;
+﻿using E_CommerceSystem_API.Controllers;
+using E_CommerceSystem_API.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_CommerceSystem_API
@@ -12,12 +13,16 @@ namespace E_CommerceSystem_API
         public DbSet<Models.Review> Reviews { get; set; }
 
         public DbSet<Models.OrderProducts> OrderProducts { get; set; }
-        
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=ECommerceDB-API;Trusted_Connection=True");
-        }
+
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=ECommerceDB-API;Trusted_Connection=True");
+        //}
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+       : base(options) { }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
